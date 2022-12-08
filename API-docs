@@ -1,0 +1,577 @@
+# **Accommodation API Documentation**
+
+## **Endpoints:**
+
+List of available endpoints:
+
+**Endpoints User:**
+
+- POST /users/register
+- POST /users/login
+- POST /users/googleLogin
+
+**Endpoints Accomodation:**
+
+- POST /accommodations
+- GET /accommodations
+- GET /accommodations/:id
+- DELETE /accommodations/:id
+- PUT /accommodations/:id
+- PATCH /accommodations/:id
+
+**Endpoints Type:**
+
+- GET /types
+
+**Endpoints Type:**
+
+- GET /histories
+
+## **Endpoints User**
+
+**1. POST /register**
+
+Request:
+
+- Body
+
+```js
+{
+    "username": "string",
+    "email": "string",
+}
+```
+
+Response (201 - Created)
+
+```js
+{
+    "id": "integer",
+    "email": "string",
+}
+```
+
+Response (400 - Bad Request)
+
+```js
+{
+    "message": "Email is required"
+}
+OR
+{
+    "message": "Invalid format email"
+}
+OR
+{
+    "message": "Email already exist"
+}
+OR
+{
+    "message": "Password is required"
+}
+OR
+{
+    "message": "Password must be at least 5 characters"
+}
+```
+
+**2. POST /login**
+
+- Body
+
+```js
+{
+    "email": "string",
+    "password": "string"
+}
+```
+
+Response (200 - OK)
+
+```js
+{
+    "access_token": "string",
+}
+```
+
+Response (400 - Bad Request)
+
+```js
+{
+    "message": "Email is required"
+}
+OR
+{
+    "message": "Password is required"
+}
+```
+
+Response (401 - Invalid_input)
+
+```js
+{
+    "message": "Invalid email or password"
+}
+```
+
+Response (401 - Unauthorized)
+
+```js
+{
+    "message": "Please login first"
+}
+```
+
+**2. POST /googleLogin**
+
+Description
+
+- Sign in via Google
+
+Response (200 - OK)
+
+```js
+{
+    "access_token": "string"}
+```
+
+Response (401 - Invalid_input)
+
+```js
+{
+    "message": "Invalid email or password"
+}
+```
+
+Response (401 - Unauthorized)
+
+```js
+{
+    "message": "Please login first"
+}
+```
+
+## **Endpoints Accommodation**
+
+**1. POST /accommodations/**
+
+Description
+
+- Create new accommodation
+
+Request:
+
+- Headers
+
+```js
+{
+    "access_token": "string"
+}
+```
+
+Response (200 - OK)
+
+```js
+{
+    "id": 3,
+    "name": "Classic Room",
+    "facility": "King Bed or Twin Bed, Shower , Room service, Free Wi-Fi",
+    "roomCapacity": 2,
+    "imgUrl": "https://pix8.agoda.net/hotelImages/5041647/-1/cb53071260686fac4a37cca7469212cc.jpgca=9&ce=1&s=1024x768",
+    "authorId": 5,
+    "location": "New Mexico",
+    "price": 250000,
+    "typeId": 3
+}
+```
+
+Response (400 - Bad Request)
+
+```js
+{
+    "message": "Name is required"
+}
+OR
+{
+    "message": "Facility is required"
+}
+OR
+{
+    "message": "Room capacity is required"
+}
+OR
+{
+    "message": "Image URL is required"
+}
+OR
+{
+    "message": "URL format is required"
+}
+OR
+{
+    "message": "Location is required"
+}
+OR
+{
+    "message": "Price is required"
+}
+OR
+{
+    "message": "Price must be at least Rp 250.000,00"
+}
+```
+
+**2. GET /accommodations/**
+
+Description:
+
+- Read all accommodations from database
+
+Request:
+
+- Headers
+
+```js
+{
+    "access_token": "string"
+}
+```
+
+Response (200 - OK)
+
+```js
+[
+  {
+    id: 1,
+    name: "Superior Double Room",
+    facility: "2 King Bed, Shower, Breakfast , Room service, Free Wi-Fi, Wheelchair accessible",
+    roomCapacity: 4,
+    imgUrl: "https://q-xx.bstatic.com/xdata/images/hotel/840x460/269252572.jpg?k=9ef393961868074f79f267f99f8cac7b4fcf8ee9a51897d491f6f566a411a12a&o=",
+    authorId: 1,
+    location: "Jakarta",
+    price: 500000,
+    typeId: 1,
+  },
+  ...,
+]
+```
+
+**3. GET /accommodations/:id**
+
+Description:
+
+- Read accommodations by id from database
+
+Request:
+
+- Headers
+
+```js
+{
+    "access_token": "string"
+}
+```
+
+- Params
+
+```js
+{
+    "id": 2
+}
+```
+
+Response (200 - OK)
+
+```js
+[
+  {
+    id: 2,
+    name: "Deluxe Room",
+    facility: "King Bed, Shower, Breakfast , Room service, Free Wi-Fi, Wheelchair accessible",
+    roomCapacity: 2,
+    imgUrl: "https://pix8.agoda.net/hotelImages/5041647/-1/e58bf419f735154f1c08cf216c28f8dc.jpg?ca=9&ce=1&s=1024x768",
+    authorId: 2,
+    location: "San Marino",
+    price: 350000,
+    typeId: 2,
+  },
+];
+```
+
+Response (404 - Not Found)
+
+```js
+{
+    "message": "Data not found"
+}
+```
+
+**4. DELETE /accommodations/:id**
+
+Description:
+
+- Delete accommodations by id from database.
+- Admin has the authority to delete all accommodations.
+- Staff only has the authority to delete the accommodations he/she added.
+
+Request:
+
+- Headers
+
+```js
+{
+    "access_token": "string"
+}
+```
+
+- Params
+
+```js
+{
+    "id": 1,
+    "role": "admin"
+}
+```
+
+Response (200 - OK)
+
+```js
+{
+    "message": "Superior Double Room has been deleted"
+}
+```
+
+Response (404 - Not Found)
+
+```js
+{
+    "message": "Data not found"
+}
+```
+
+Response (403 - Forbidden)
+
+```js
+{
+    "message": "You dont have permission to access"
+}
+```
+
+**5. Put /accommodations/:id**
+
+Description:
+
+- Update data accommodations by id from database.
+- Admin has the authority to update data all accommodations.
+- Staff only has the authority to update data the accommodations he/she added.
+
+Request:
+
+- Headers
+
+```js
+{
+    "access_token": "string"
+}
+```
+
+- Params
+
+  ```json
+  {
+    "id": "integer"
+  }
+  ```
+
+- Body
+
+```js
+{
+    "id": 3,
+    "name": "Classic Room",
+    "facility": "King Bed or Twin Bed, Shower , Room service, Free Wi-Fi",
+    "roomCapacity": 2,
+    "imgUrl": "https://pix8.agoda.net/hotelImages/5041647/-1/cb53071260686fac4a37cca7469212cc.jpgca=9&ce=1&s=1024x768",
+    "location": "New Mexico",
+    "price": 250000,
+    "typeId": 3
+}
+```
+
+Response (200 - OK)
+
+```json
+{
+  "message": "Accommodation with id 3 updated"
+}
+```
+
+Response (400 - Bad Request)
+
+```js
+{
+    "message": "Name is required"
+}
+OR
+{
+    "message": "Facility is required"
+}
+OR
+{
+    "message": "Room capacity is required"
+}
+OR
+{
+    "message": "Image URL is required"
+}
+OR
+{
+    "message": "URL format is required"
+}
+OR
+{
+    "message": "Location is required"
+}
+OR
+{
+    "message": "Price is required"
+}
+OR
+{
+    "message": "Price must be at least Rp 250.000,00"
+}
+```
+
+**6. PATCH /accommodations/:id**
+
+Description:
+
+- Modify field status in product table
+- Only can be access by Admin
+
+- Headers
+
+```js
+{
+    "access_token": "string"
+}
+```
+
+- Params
+
+  ```json
+  {
+    "id": "integer"
+  }
+  ```
+
+  - Body
+
+  ```json
+  {
+    "status": "string"
+  }
+  ```
+
+  Response (200 - OK)
+
+````json
+{
+  "message": "Accommodation status with id <id> has been updated from <status> into <newStatus>"
+}```
+
+## **Endpoints Type**
+
+**1. GET /types/**
+
+Description:
+
+- Read all type from database
+
+Request:
+
+- Headers
+
+```js
+{
+    "access_token": "string"
+}
+````
+
+Response (200 - OK)
+
+```js
+[
+  {
+    id: 1,
+    name: "VIP",
+  },
+  {
+    id: 2,
+    name: "Deluxe",
+  },
+  {
+    id: 3,
+    name: "Classic",
+  },
+];
+```
+
+## **Endpoints History**
+
+**1. GET /histories/**
+
+Description:
+
+- Read all history from database
+
+Request:
+
+- Headers
+
+```js
+{
+    "access_token": "string"
+}
+```
+
+- Body
+
+```js
+[
+  {
+    id: 5,
+    name: "aa",
+    description: "New Accommodation with id 3 has been created",
+    updatedBy: "wvenour1@twitter.com",
+    createdAt: "2022-11-25T16:27:55.846Z",
+    updatedAt: "2022-11-25T16:27:55.846Z",
+  },
+  {
+    id: 4,
+    name: "aa",
+    description: "New Accommodation with id 2 has been created",
+    updatedBy: "yo@gmail.com",
+    createdAt: "2022-11-25T10:08:50.898Z",
+    updatedAt: "2022-11-25T10:08:50.898Z",
+  },
+];
+```
+
+## **Global Error**
+
+Response (401 - Unauthorized)
+
+```js
+{
+    "message": "Please login first"
+}
+```
+
+Response (500 - Internal Server Error)
+
+```js
+{
+    "message": "Internal server error"
+}
+```

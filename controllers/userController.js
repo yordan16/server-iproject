@@ -1,7 +1,7 @@
-const { User, Profile } = require("../models/index");
+const { User } = require("../models/index");
+const { OAuth2Client } = require("google-auth-library");
 const { comparePassword } = require("../helper/bcryptjs");
 const { createToken } = require("../helper/jwt");
-const ProfileController = require("./profileController");
 const sendEmail = require("../helper/nodemailer");
 
 class UserController {
@@ -15,7 +15,7 @@ class UserController {
       sendEmail(email);
       res.status(201).json(data);
     } catch (error) {
-      console.log(error);
+      next(error);
     }
   }
   static async logIn(req, res, next) {
@@ -38,6 +38,40 @@ class UserController {
       let access_token = createToken(payload);
 
       res.status(200).json({ access_token });
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async googleLogin(req, res, next) {
+    try {
+      const token = req.headers.google_token;
+      const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+
+      const client = new OAuth2Client(CLIENT_ID);
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: CLIENT_ID,
+      });
+      const google_payload = ticket.getPayload();
+
+      const [user, created] = await User.findOrCreate({
+        where: {
+          email: google_payload.email,
+        },
+        defaults: {
+          username: google_payload.given_name,
+          email: google_payload.email,
+          password: "google_password",
+          address: "google_address",
+          phoneNumber: "google_phoneNumber",
+        },
+        hooks: false,
+      });
+      let payload = { id: user.id };
+      let access_token = createToken(payload);
+      res.status(200).json({
+        access_token: access_token,
+      });
     } catch (error) {
       next(error);
     }

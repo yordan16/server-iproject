@@ -1,6 +1,7 @@
 function errorHandler(error, req, res, next) {
   let status = 500;
   let message = "Internal server error";
+  console.log(error);
 
   switch (error.name) {
     case "SequelizeValidationError":
@@ -25,7 +26,7 @@ function errorHandler(error, req, res, next) {
       message = "You dont have permission to access";
     case "Already exists":
       status = 400;
-      message = "This accommodation already exists in your wishlist";
+      message = "This Product already exists in your cart";
 
     default:
       break;
